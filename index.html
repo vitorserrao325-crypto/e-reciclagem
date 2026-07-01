@@ -8,6 +8,7 @@
 </head>
 <body>
 
+    <!-- ================= TELA DE LOGIN / CADASTRO ================= -->
     <div id="secao-login" class="autenticacao-container">
         <div class="card-auth">
             <div class="logo-recicla">♻️</div>
@@ -40,6 +41,7 @@
         </div>
     </div>
 
+    <!-- ================= TELA DE BLOQUEIO POR FALTA DE PAGAMENTO ================= -->
     <div id="secao-bloqueio-pagamento" class="autenticacao-container" style="display: none; background: #1e293b;">
         <div class="card-auth" style="max-width: 450px;">
             <div style="font-size: 3.5rem; margin-bottom: 10px;">⚠️</div>
@@ -60,6 +62,7 @@
         </div>
     </div>
 
+    <!-- ================= SISTEMA PRINCIPAL ================= -->
     <div id="secao-sistema" style="display: none;">
         <header>
             <div class="container header-flex">
@@ -84,6 +87,7 @@
                 <p>Aqui você monitora seus materiais, gerencia a triagem e acompanha o preço do mercado em tempo real.</p>
             </div>
 
+            <!-- CONTROLE DE ASSINANTES (EXCLUSIVO DO VICTOR ADM) -->
             <section class="card" id="painel-admin-usuarios" style="display: none; border: 2px solid #ef4444; margin-bottom: 25px;">
                 <h2 style="color: #ef4444;">👥 Controle Avançado de Assinantes (Mensal / Semestral / Anual)</h2>
                 <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Selecione o plano pago pelo cliente e confirme para calcular automaticamente a data de validade:</p>
@@ -102,6 +106,7 @@
                 </div>
             </section>
 
+            <!-- CARD DE INDICADORES -->
             <section class="indicadores-container">
                 <div class="card-indicador card-itens">
                     <div class="indicador-icon">📦</div>
@@ -212,6 +217,7 @@
         </main>
     </div>
 
+    <!-- MODAL DE EDIÇÃO -->
     <div id="modal-editar" class="modal">
         <div class="modal-conteudo">
             <h3>Editar Dados do Material</h3>
@@ -233,7 +239,8 @@
     </div>
 
     <script>
-        const API_URL = "http://localhost:3000/api";
+        // CONFIGURAÇÃO DE PRODUÇÃO: Apontando direto para o seu servidor Render na Nuvem
+        const API_URL = "https://e-reciclagem.onrender.com/api";
 
         const secaoLogin = document.getElementById('secao-login');
         const secaoSistema = document.getElementById('secao-sistema');
@@ -315,7 +322,7 @@
             secaoLogin.style.display = 'none';
             secaoSistema.style.display = 'none';
             secaoBloqueioPagamento.style.display = 'flex';
-            textoErroBloqueio.textContent = mensagem || "Sua assinatura precisa de regularização financeira.";
+            textoErroBloqueio.textContent = message || "Sua assinatura precisa de regularização financeira.";
         }
 
         btnVoltarBloqueio.addEventListener('click', () => {
@@ -370,7 +377,7 @@
                         }
                     }
                 } catch (err) {
-                    alert("Erro ao conectar com o Back-End. Certifique-se de que o comando 'npm start' está rodando!");
+                    alert("Erro ao conectar com o Servidor em nuvem Render. Aguarde 1 minuto e tente novamente!");
                 }
             } else {
                 try {
