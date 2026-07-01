@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Recicla Pro | Gestão de Resíduos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="secao-login" class="autenticacao-container">
+        <div class="card-auth">
+            <div class="logo-recicla">♻️</div>
+            <h2 id="auth-titulo">E-Recicla Pro</h2>
+            <p id="auth-sub">Planos Mensal, Semestral e Anual. Faça sua gestão profissional de resíduos.</p>
+
+            <form id="form-auth">
+                <div class="form-group">
+                    <label for="auth-email">E-mail ou Gmail</label>
+                    <input type="email" id="auth-email" placeholder="seuemail@gmail.com" required>
+                </div>
+                <div class="form-group" id="group-senha">
+                    <label for="auth-senha">Senha</label>
+                    <input type="password" id="auth-senha" placeholder="Mínimo 3 caracteres" required>
+                </div>
+                
+                <button type="submit" id="btn-auth-principal" class="btn-salvar">Entrar no Painel</button>
+            </form>
+
+            <div class="divisor">OU</div>
+
+            <button id="btn-google" class="btn-google">
+                <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google">
+                Entrar com o Gmail
+            </button>
+
+            <div class="auth-links">
+                <a href="#" id="link-alternar">Criar nova conta / Assinar</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="secao-bloqueio-pagamento" class="autenticacao-container" style="display: none; background: #1e293b;">
+        <div class="card-auth" style="max-width: 450px;">
+            <div style="font-size: 3.5rem; margin-bottom: 10px;">⚠️</div>
+            <h2 style="color: #ef4444; margin-bottom: 10px;">Acesso Suspenso ou Inativo</h2>
+            <p id="texto-erro-bloqueio" style="font-size: 0.95rem; color: var(--text-main); font-weight: 500; margin-bottom: 15px;">
+                Sua assinatura está vencida ou aguardando liberação.
+            </p>
+            <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #cbd5e1; text-align: left;">
+                <p style="margin-bottom: 5px; font-weight: bold; color: #0f172a;">Planos Disponíveis (Pix para o Victor):</p>
+                <ul style="margin-left: 20px; font-size: 0.85rem; color: #475569; list-style-type: square;">
+                    <li><strong>Mensal:</strong> R$ 29,00</li>
+                    <li><strong>Semestral:</strong> R$ 149,00</li>
+                    <li><strong>Anual:</strong> R$ 249,00</li>
+                </ul>
+                <p style="margin-top: 10px; font-size: 0.85rem; color: #475569;">Envie o comprovante para o administrador liberar seu acesso na hora com o plano escolhido!</p>
+            </div>
+            <button id="btn-voltar-bloqueio" class="btn-excluir" style="width: 100%;">Voltar para o Login</button>
+        </div>
+    </div>
+
+    <div id="secao-sistema" style="display: none;">
+        <header>
+            <div class="container header-flex">
+                <div>
+                    <h1>♻️ E-Recicla Pro</h1>
+                    <p>Painel de Controle de Resíduos Eletrônicos</p>
+                </div>
+                <div class="usuario-topo">
+                    <div class="mensagem-boas-vindas">
+                        👋 <span id="nome-usuario-logado">...</span> 
+                        <span id="badge-admin" style="display:none; background:#ef4444; color:white; font-size:0.7rem; padding:2px 6px; border-radius:4px; margin-left:5px; font-weight:bold;">ADMIN</span>
+                        <div id="info-plano-usuario" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;"></div>
+                    </div>
+                    <button id="btn-sair" class="btn-excluir">Sair</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="container">
+            <div class="banner-boas-vindas">
+                <h2>Seja bem-vindo ao E-Recicla! 🎉</h2>
+                <p>Aqui você monitora seus materiais, gerencia a triagem e acompanha o preço do mercado em tempo real.</p>
+            </div>
+
+            <section class="card" id="painel-admin-usuarios" style="display: none; border: 2px solid #ef4444; margin-bottom: 25px;">
+                <h2 style="color: #ef4444;">👥 Controle Avançado de Assinantes (Mensal / Semestral / Anual)</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Selecione o plano pago pelo cliente e confirme para calcular automaticamente a data de validade:</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>E-mail do Assinante</th>
+                                <th>Plano / Vencimento Atual</th>
+                                <th>Status</th>
+                                <th>Ações de Ativação Manual (Victor)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lista-usuarios-pendentes"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="indicadores-container">
+                <div class="card-indicador card-itens">
+                    <div class="indicador-icon">📦</div>
+                    <div>
+                        <h3>Total de Itens</h3>
+                        <p id="total-itens">0</p>
+                    </div>
+                </div>
+                <div class="card-indicador card-peso">
+                    <div class="indicador-icon">⚖️</div>
+                    <div>
+                        <h3>Massa Total</h3>
+                        <p><span id="total-peso">0.00</span> <small>kg</small></p>
+                    </div>
+                </div>
+                <div class="card-indicador" style="border-left: 5px solid #10b981;">
+                    <div class="indicador-icon">💰</div>
+                    <div>
+                        <h3>Total a Receber (Venda)</h3>
+                        <p style="color: #10b981;">R$ <span id="total-faturamento">0,00</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="layout-principal">
+                <div class="coluna-sistema">
+                    <section class="card">
+                        <h2>✨ Cadastrar Novo Material</h2>
+                        <form id="form-material">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="nome">Nome do Material/Aparelho:</label>
+                                    <input type="text" id="nome" placeholder="Ex: Monitor Dell 19', Placa-mãe Asus" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="quantidade">Peso Cadastrado (kg):</label>
+                                    <input type="number" id="quantidade" min="0.01" step="any" placeholder="Ex: 5" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="preco-venda">Valor do Material por kg (R$):</label>
+                                    <input type="number" id="preco-venda" min="0.01" step="any" placeholder="Ex: 35.50" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="status">Status do Material:</label>
+                                <select id="status" required>
+                                    <option value="Aguardando Triagem">🟡 Aguardando Triagem</option>
+                                    <option value="Em Processamento">🔵 Em Processamento</option>
+                                    <option value="Pronto para Destinação">🟢 Pronto para Destinação</option>
+                                    <option value="Sucata/Inservível">🔴 Sucata/Inservível</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-salvar">Gravar no Estoque</button>
+                        </form>
+                    </section>
+
+                    <section class="card">
+                        <div class="topo-tabela">
+                            <h2>📋 Materiais em Estoque</h2>
+                            <div class="filtro-group">
+                                <select id="filtro-status">
+                                    <option value="Todos">Filtro: Todos</option>
+                                    <option value="Aguardando Triagem">🟡 Triagem</option>
+                                    <option value="Em Processamento">🔵 Em Processamento</option>
+                                    <option value="Pronto para Destinação">🟢 Pronto para Destinação</option>
+                                    <option value="Sucata/Inservível">🔴 Sucata/Inservível</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Peso (kg)</th>
+                                        <th>Valor / kg</th>
+                                        <th>Subtotal a Receber</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lista-materiais"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="coluna-cotacao">
+                    <section class="card" style="border-top: 4px solid #3b82f6;">
+                        <h2>💾 Cópia de Segurança</h2>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Baixe seus dados para não perder nada caso limpe o navegador.</p>
+                        <button id="btn-exportar" class="btn-salvar" style="background-color: #3b82f6; margin-bottom: 10px;">📥 Baixar Backup do Estoque</button>
+                        <label style="display: block; text-align: center; background: #f1f5f9; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; border: 1px dashed #cbd5e1;">
+                            📤 Enviar Arquivo de Backup
+                            <input type="file" id="input-importar" accept=".json" style="display: none;">
+                        </label>
+                    </section>
+
+                    <section class="card card-preco">
+                        <h2>💵 Cotação Real BH</h2>
+                        <p class="sub-atualizado" id="data-cotacao-atualizada">Atualizando...</p>
+                        <ul class="lista-precos" id="lista-cotacao-dinamica"></ul>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="modal-editar" class="modal">
+        <div class="modal-conteudo">
+            <h3>Editar Dados do Material</h3>
+            <p id="modal-nome-material" style="margin-bottom: 15px; font-weight: bold; color: var(--text-muted);"></p>
+            <input type="hidden" id="editar-id">
+            <div class="form-group">
+                <label for="editar-quantidade">Novo Peso (kg):</label>
+                <input type="number" id="editar-quantidade" min="0.01" step="any" required>
+            </div>
+            <div class="form-group">
+                <label for="editar-preco-venda">Novo Valor por kg (R$):</label>
+                <input type="number" id="editar-preco-venda" min="0.01" step="any" required>
+            </div>
+            <div class="modal-botoes">
+                <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+                <button class="btn-confirmar" onclick="salvarEdicaoPeso()">Salvar Alteração</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:3000/api";
+
+        const secaoLogin = document.getElementById('secao-login');
+        const secaoSistema = document.getElementById('secao-sistema');
+        const secaoBloqueioPagamento = document.getElementById('secao-bloqueio-pagamento');
+        const textoErroBloqueio = document.getElementById('texto-erro-bloqueio');
+        const btnVoltarBloqueio = document.getElementById('btn-voltar-bloqueio');
+
+        const formAuth = document.getElementById('form-auth');
+        const authTitulo = document.getElementById('auth-titulo');
+        const authSub = document.getElementById('auth-sub');
+        const inputEmail = document.getElementById('auth-email');
+        const inputSenha = document.getElementById('auth-senha');
+        const btnAuthPrincipal = document.getElementById('btn-auth-principal');
+        const btnGoogle = document.getElementById('btn-google');
+        const linkAlternar = document.getElementById('link-alternar');
+        const nomeUsuarioLogado = document.getElementById('nome-usuario-logado');
+        const infoPlanoUsuario = document.getElementById('info-plano-usuario');
+        const badgeAdmin = document.getElementById('badge-admin');
+        const btnSair = document.getElementById('btn-sair');
+
+        const formMaterial = document.getElementById('form-material');
+        const filtroStatus = document.getElementById('filtro-status');
+        const txtTotalItens = document.getElementById('total-itens');
+        const txtTotalPeso = document.getElementById('total-peso');
+        const txtTotalFaturamento = document.getElementById('total-faturamento');
+        
+        const modalEditar = document.getElementById('modal-editar');
+        const txtModalNome = document.getElementById('modal-nome-material');
+        const inputEditarId = document.getElementById('editar-id');
+        const inputEditarQtd = document.getElementById('editar-quantidade');
+        const inputEditarPreco = document.getElementById('editar-preco-venda');
+
+        const btnExportar = document.getElementById('btn-exportar');
+        const inputImportar = document.getElementById('input-importar');
+        const painelAdminUsuarios = document.getElementById('painel-admin-usuarios');
+        const listaUsuariosPendentes = document.getElementById('lista-usuarios-pendentes');
+
+        let modoAtual = 'login'; 
+        let materiais = [];
+        let usuarioLogado = localStorage.getItem('app_user_email') || null;
+        let usuarioPerfil = localStorage.getItem('app_user_perfil') || null;
+
+        verificarSessao();
+
+        function verificarSessao() {
+            if (usuarioLogado) {
+                secaoLogin.style.display = 'none';
+                secaoBloqueioPagamento.style.display = 'none';
+                secaoSistema.style.display = 'block';
+                nomeUsuarioLogado.textContent = `Bem-vindo, ${usuarioLogado.split('@')[0]}`;
+                
+                const plano = localStorage.getItem('app_user_plano');
+                const venc = localStorage.getItem('app_user_vencimento');
+                if(plano && venc) {
+                    infoPlanoUsuario.textContent = `Plano: ${plano.toUpperCase()} | Expira em: ${venc.split('-').reverse().join('/')}`;
+                }
+
+                if (usuarioPerfil === 'admin') {
+                    badgeAdmin.style.display = 'inline-block';
+                    painelAdminUsuarios.style.display = 'block';
+                    infoPlanoUsuario.textContent = "Acesso Vitalício de Administrador";
+                    carregarUsuariosAdmin();
+                } else {
+                    badgeAdmin.style.display = 'none';
+                    painelAdminUsuarios.style.display = 'none';
+                }
+
+                materiais = JSON.parse(localStorage.getItem(`materiais_${usuarioLogado}`)) || [];
+                renderizarTabela();
+                gerarCotacaoDoDiaBH();
+            } else {
+                secaoLogin.style.display = 'flex';
+                secaoSistema.style.display = 'none';
+                secaoBloqueioPagamento.style.display = 'none';
+            }
+        }
+
+        function exibirTelaBloqueio(mensagem) {
+            secaoLogin.style.display = 'none';
+            secaoSistema.style.display = 'none';
+            secaoBloqueioPagamento.style.display = 'flex';
+            textoErroBloqueio.textContent = mensagem || "Sua assinatura precisa de regularização financeira.";
+        }
+
+        btnVoltarBloqueio.addEventListener('click', () => {
+            limparLocalStorageSessao();
+            verificarSessao();
+        });
+
+        linkAlternar.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (modoAtual === 'login') {
+                modoAtual = 'cadastro';
+                authTitulo.textContent = "Criar Conta & Escolher Plano";
+                authSub.textContent = "Solicite acesso aos planos Mensal, Semestral ou Anual.";
+                btnAuthPrincipal.textContent = "Solicitar Acesso Pro";
+                linkAlternar.textContent = "Já tem cadastro? Fazer Login";
+            } else {
+                modoAtual = 'login';
+                authTitulo.textContent = "E-Recicla Pro";
+                authSub.textContent = "Planos Mensal, Semestral e Anual. Faça sua gestão profissional de resíduos.";
+                btnAuthPrincipal.textContent = "Entrar no Painel";
+                linkAlternar.textContent = "Criar nova conta / Assinar";
+            }
+        });
+
+        formAuth.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = inputEmail.value.trim();
+            const senha = inputSenha.value.trim();
+
+            if (modoAtual === 'login') {
+                try {
+                    const resposta = await fetch(`${API_URL}/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, senha })
+                    });
+                    const dados = await replyJson(resposta);
+
+                    if (resposta.ok) {
+                        localStorage.setItem('app_user_email', dados.email);
+                        localStorage.setItem('app_user_perfil', dados.perfil);
+                        localStorage.setItem('app_user_plano', dados.tipoPlano);
+                        localStorage.setItem('app_user_vencimento', dados.dataVencimento);
+                        usuarioLogado = dados.email;
+                        usuarioPerfil = dados.perfil;
+                        verificarSessao();
+                    } else {
+                        if (dados.erro === 'assinatura_vencida' || dados.erro === 'aguardando_liberacao' || dados.erro === 'suspenso') {
+                            exibirTelaBloqueio(dados.mensagem);
+                        } else {
+                            alert(dados.erro || "Erro de autenticação.");
+                        }
+                    }
+                } catch (err) {
+                    alert("Erro ao conectar com o Back-End. Certifique-se de que o comando 'npm start' está rodando!");
+                }
+            } else {
+                try {
+                    const resposta = await fetch(`${API_URL}/cadastro`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, senha })
+                    });
+                    const dados = await replyJson(resposta);
+
+                    if (resposta.ok) {
+                        alert("🎉 Conta solicitada! Entre em contato com o Victor informando o plano desejado (Mensal, Semestral ou Anual) para liberação.");
+                        linkAlternar.click(); 
+                    } else {
+                        alert(dados.erro || "Erro ao criar conta.");
+                    }
+                } catch (err) {
+                    alert("Erro ao conectar com o servidor.");
+                }
+            }
+        });
+
+        async function replyJson(res) {
+            try { return await res.json(); } catch(e) { return { erro: "Erro desconhecido no servidor." }; }
+        }
+
+        btnGoogle.addEventListener('click', () => {
+            const email = prompt("Digite seu Gmail para solicitar o acesso:", "seuemail@gmail.com");
+            if (email && email.includes('@')) {
+                inputEmail.value = email;
+                inputSenha.value = "google-auth-pass";
+                modoAtual = 'cadastro';
+                formAuth.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        btnSair.addEventListener('click', () => {
+            limparLocalStorageSessao();
+            window.location.reload(); 
+        });
+
+        function limparLocalStorageSessao() {
+            localStorage.removeItem('app_user_email');
+            localStorage.removeItem('app_user_perfil');
+            localStorage.removeItem('app_user_plano');
+            localStorage.removeItem('app_user_vencimento');
+            usuarioLogado = null;
+            usuarioPerfil = null;
+        }
+
+        async function carregarUsuariosAdmin() {
+            if (!listaUsuariosPendentes) return;
+            try {
+                const resposta = await fetch(`${API_URL}/admin/usuarios`);
+                const clientes = await resposta.json();
+                
+                listaUsuariosPendentes.innerHTML = '';
+
+                if (clientes.length === 0) {
+                    listaUsuariosPendentes.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:15px; color:gray;">Nenhum cliente registrado no servidor.</td></tr>`;
+                    return;
+                }
+
+                clientes.forEach(u => {
+                    const tr = document.createElement('tr');
+                    
+                    let statusStyle = "";
+                    let statusTexto = "";
+                    if (u.status === 'aprovado') {
+                        statusTexto = `✅ Ativo (${u.tipoPlano.toUpperCase()})`;
+                        statusStyle = "color: #166534; font-weight: bold; background: #dcfce7; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem;";
+                    } else if (u.status === 'pendente') {
+                        statusTexto = "🟡 Aguardando Confirmação";
+                        statusStyle = "color: #713f12; font-weight: bold; background: #fef9c3; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem;";
+                    } else {
+                        statusTexto = "🔴 Suspenso / Vencido";
+                        statusStyle = "color: #991b1b; font-weight: bold; background: #fee2e2; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem;";
+                    }
+
+                    const dataFormatada = u.dataVencimento.split('-').reverse().join('/');
+                    
+                    tr.innerHTML = `
+                        <td><strong>${u.email}</strong></td>
+                        <td>Plano: <span style="text-transform: capitalize; font-weight: 600;">${u.tipoPlano}</span><br><small style="color:gray;">Vence em: ${dataFormatada}</small></td>
+                        <td><span style="${statusStyle}">${statusTexto}</span></td>
+                        <td>
+                            <div style="display:flex; gap:6px; align-items:center;">
+                                <select id="select-plano-${u.email.replace(/[@.]/g, '')}" style="padding:4px; font-size:0.8rem; border-radius:4px;">
+                                    <option value="mensal">Plano Mensal</option>
+                                    <option value="semestral">Plano Semestral</option>
+                                    <option value="anual">Plano Anual</option>
+                                </select>
+                                <button class="btn-salvar" style="background-color:#10b981; padding:5px 8px; font-size:0.75rem; border:none; color:white; border-radius:4px;" onclick="aprovarPlanoUsuario('${u.email}')">Confirmar Plano</button>
+                                <button class="btn-excluir" style="padding:5px 8px; font-size:0.75rem; border:none; color:white; background-color:#ef4444; border-radius:4px;" onclick="bloquearUsuario('${u.email}')">Bloquear</button>
+                            </div>
+                        </td>
+                    `;
+                    listaUsuariosPendentes.appendChild(tr);
+                });
+            } catch(e) { console.error("Erro ao carregar painel admin do servidor."); }
+        }
+
+        window.aprovarPlanoUsuario = async (email) => {
+            const idSelect = `select-plano-${email.replace(/[@.]/g, '')}`;
+            const planoEscolhido = document.getElementById(idSelect).value;
+
+            try {
+                const resposta = await fetch(`${API_URL}/admin/atualizar-plano`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, planoEscolhido })
+                });
+                const dados = await resposta.json();
+                alert(dados.mensagem);
+                carregarUsuariosAdmin();
+            } catch(e) { alert("Erro ao atualizar plano."); }
+        };
+
+        window.bloquearUsuario = async (email) => {
+            if (!confirm(`Deseja realmente bloquear e cortar o acesso do cliente ${email}?`)) return;
+            try {
+                const resposta = await fetch(`${API_URL}/admin/bloquear`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const dados = await resposta.json();
+                alert(dados.mensagem);
+                carregarUsuariosAdmin();
+            } catch(e) { alert("Erro ao bloquear usuário."); }
+        };
+
+        if (formMaterial) {
+            formMaterial.addEventListener('submit', function(e) {
+                e.preventDefault(); 
+                const nome = document.getElementById('nome').value;
+                const quantidade = parseFloat(document.getElementById('quantidade').value);
+                const precoVenda = parseFloat(document.getElementById('preco-venda').value);
+                const status = document.getElementById('status').value;
+
+                const novoMaterial = { 
+                    id: Date.now(), 
+                    nome, 
+                    quantidade, 
+                    precoVenda: precoVenda || 0, 
+                    status 
+                };
+                
+                materiais.push(novoMaterial);
+                localStorage.setItem(`materiais_${usuarioLogado}`, JSON.stringify(materiais));
+                formMaterial.reset(); 
+                renderizarTabela();
+            });
+        }
+
+        function renderizarTabela() {
+            const target = document.getElementById('lista-materiais');
+            if (!target) return;
+            
+            const statusSelecionado = filtroStatus.value;
+            let acumuladoPeso = 0;
+            let acumuladoFaturamento = 0;
+
+            target.innerHTML = ''; 
+            const filtrados = materiais.filter(m => statusSelecionado === 'Todos' || m.status === statusSelecionado);
+
+            txtTotalItens.textContent = filtrados.length;
+
+            if (filtrados.length === 0) {
+                target.innerHTML = `<tr><td colspan="6" style="text-align:center; color: #7f8c8d; padding: 20px;">Nenhum material no estoque.</td></tr>`;
+                txtTotalPeso.textContent = "0.00";
+                txtTotalFaturamento.textContent = "0,00";
+                return;
+            }
+
+            filtrados.forEach(m => {
+                acumuladoPeso += (m.quantidade || 0);
+                let subtotalVenda = m.quantidade * (m.precoVenda || 0);
+                acumuladoFaturamento += subtotalVenda;
+
+                const tr = document.createElement('tr');
+                let classe = m.status.includes('Triagem') ? 'badge-triagem' : m.status.includes('Processamento') ? 'badge-processo' : m.status.includes('Destinação') ? 'badge-pronto' : 'badge-sucata';
+                
+                tr.innerHTML = `
+                    <td><strong>${m.nome}</strong></td>
+                    <td><span class="peso-destaque">${m.quantidade.toFixed(2)} kg</span></td>
+                    <td style="color:#475569;">R$ ${m.precoVenda.toFixed(2).replace('.',',')}</td>
+                    <td style="color:#10b981; font-weight:bold;">R$ ${subtotalVenda.toFixed(2).replace('.',',')}</td>
+                    <td><span class="${classe}">${m.status}</span></td>
+                    <td>
+                        <div class="acoes-container">
+                            <button class="btn-editar" data-id="${m.id}" data-nome="${m.nome}" data-qtd="${m.quantidade}" data-preco="${m.precoVenda}">Editar</button>
+                            <button class="btn-excluir" data-id="${m.id}">Remover</button>
+                        </div>
+                    </td>
+                `;
+                target.appendChild(tr);
+            });
+
+            txtTotalPeso.textContent = acumuladoPeso.toFixed(2);
+            txtTotalFaturamento.textContent = acumuladoFaturamento.toFixed(2).replace('.', ',');
+
+            target.querySelectorAll('.btn-editar').forEach(b => b.addEventListener('click', () => {
+                inputEditarId.value = b.getAttribute('data-id');
+                txtModalNome.textContent = `Item: ${b.getAttribute('data-nome')}`;
+                inputEditarQtd.value = b.getAttribute('data-qtd');
+                inputEditarPreco.value = b.getAttribute('data-preco');
+                modalEditar.style.display = 'flex';
+            }));
+            
+            target.querySelectorAll('.btn-excluir').forEach(b => b.addEventListener('click', () => {
+                if(confirm("Deseja remover este material?")) {
+                    materiais = materiais.filter(m => m.id != b.getAttribute('data-id'));
+                    localStorage.setItem(`materiais_${usuarioLogado}`, JSON.stringify(materiais));
+                    renderizarTabela();
+                }
+            }));
+        }
+
+        if(filtroStatus) filtroStatus.addEventListener('change', renderizarTabela);
+        window.fecharModal = () => modalEditar.style.display = 'none';
+        window.salvarEdicaoPeso = () => {
+            const id = parseInt(inputEditarId.value);
+            const nPeso = parseFloat(inputEditarQtd.value);
+            const nPreco = parseFloat(inputEditarPreco.value);
+            
+            materiais = materiais.map(m => m.id === id ? { ...m, quantidade: nPeso, precoVenda: nPreco } : m);
+            localStorage.setItem(`materiais_${usuarioLogado}`, JSON.stringify(materiais));
+            window.fecharModal();
+            renderizarTabela();
+        };
+
+        function gerarCotacaoDoDiaBH() {
+            const listaHTML = document.getElementById('lista-cotacao-dinamica');
+            const txtData = document.getElementById('data-cotacao-atualizada');
+            if (!listaHTML) return;
+
+            const hoje = new Date();
+            txtData.textContent = `📅 Cotações de referência: ${String(hoje.getDate()).padStart(2, '0')}/${String(hoje.getMonth() + 1).padStart(2, '0')}/${hoje.getFullYear()}`;
+
+            const materiaisBase = [
+                { nome: "🔹 Cobre Mel (Limpo)", preco: 68.00 },
+                { nome: "🔹 Cobre Misto", preco: 64.00 },
+                { nome: "🔹 Latão / Bronze", preco: 31.00 },
+                { nome: "🔹 Alumínio Batido", preco: 8.50 },
+                { nome: "🔹 Placas Verdes (CPU)", preco: 35.00 },
+                { nome: "🔹 Placas de Celular", preco: 45.00 },
+                { nome: "🔹 Sucata de Ferro", preco: 0.90 }
+            ];
+
+            listaHTML.innerHTML = "";
+            materiaisBase.forEach((item) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="material-nome">${item.nome}</span>
+                    <span class="material-valor">R$ ${item.preco.toFixed(2).replace('.', ',')} <small>/kg</small></span>
+                `;
+                listaHTML.appendChild(li);
+            });
+        }
+
+        btnExportar.addEventListener('click', () => {
+            if (materiais.length === 0) { alert("Seu estoque está vazio."); return; }
+            const dadosEstoque = JSON.stringify(materiais, null, 2);
+            const blob = new Blob([dadosEstoque], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const linkFormado = document.createElement('a');
+            linkFormado.href = url;
+            linkFormado.download = `backup_estoque_erecicla_${usuarioLogado.split('@')[0]}.json`;
+            linkFormado.click();
+            URL.revokeObjectURL(url);
+        });
+
+        inputImportar.addEventListener('change', (e) => {
+            const arquivo = e.target.files[0];
+            if (!arquivo) return;
+            const leitor = new FileReader();
+            leitor.onload = function(evento) {
+                try {
+                    const dadosCarregados = JSON.parse(evento.target.result);
+                    if (Array.isArray(dadosCarregados)) {
+                        materiais = dadosCarregados;
+                        localStorage.setItem(`materiais_${usuarioLogado}`, JSON.stringify(materiais));
+                        renderizarTabela();
+                        alert("🎉 Backup restaurado com sucesso!");
+                    }
+                } catch (erro) { alert("Erro ao ler o backup."); }
+            };
+            leitor.readAsText(arquivo);
+        });
+    </script>
+</body>
+</html>
