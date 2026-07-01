@@ -239,8 +239,8 @@
     </div>
 
     <script>
-        // CONFIGURAÇÃO DE PRODUÇÃO: Apontando direto para o seu servidor Render na Nuvem
-        const API_URL = "https://e-reciclagem.onrender.com/api";
+        // ASSINATURA LOCAL DO SEU SERVIDOR RENDER ATUALIZADA
+        const API_URL = "https://e-reciclagem-1.onrender.com/api";
 
         const secaoLogin = document.getElementById('secao-login');
         const secaoSistema = document.getElementById('secao-sistema');
@@ -322,7 +322,7 @@
             secaoLogin.style.display = 'none';
             secaoSistema.style.display = 'none';
             secaoBloqueioPagamento.style.display = 'flex';
-            textoErroBloqueio.textContent = message || "Sua assinatura precisa de regularização financeira.";
+            textoErroBloqueio.textContent = mensagem || "Sua assinatura precisa de regularização financeira.";
         }
 
         btnVoltarBloqueio.addEventListener('click', () => {
@@ -377,7 +377,7 @@
                         }
                     }
                 } catch (err) {
-                    alert("Erro ao conectar com o Servidor em nuvem Render. Aguarde 1 minuto e tente novamente!");
+                    alert("O servidor em nuvem está iniciando. Aguarde cerca de 1 minuto e tente logar novamente!");
                 }
             } else {
                 try {
